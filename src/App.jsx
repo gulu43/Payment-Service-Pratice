@@ -9,10 +9,11 @@ export const ALL_DATA = createContext(null);
 
 function App() {
 
-  const [amount, setAmount] = useState('');
+  const [amount, setAmount] = useState(0);
+  const [name, setName] = useState('');
   const navigate = useNavigate();
   return (
-    <ALL_DATA.Provider value={{ amount, setAmount }}>
+    <ALL_DATA.Provider value={{ amount, setAmount ,name, setName}}>
       <Routes>
         <Route path="*" element={<Navigate to="/donate" replace />} />
         <Route path="donate" element={ <Payment/> } />
