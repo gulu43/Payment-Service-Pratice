@@ -9,6 +9,7 @@ export function Payment() {
     const { amount, setAmount, name, setName } = useContext(ALL_DATA);
     const [time, setTime] = useState(true);
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
     useEffect(() => {
         const timer = setTimeout(() => {
             setTime(false)
@@ -19,8 +20,11 @@ export function Payment() {
     }, [])
 
     const sendMoneyFn = () => {
-
-        fetch(`${backendUrl}/donate`, {
+        if (!name || !amount || Number(amount) <= 0) {
+            alert("Please enter a valid name and amount");
+            return;
+        }
+        fetch(`${backendUrl}/create-order`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -31,8 +35,11 @@ export function Payment() {
             })
         })
             .then(response => response.json())
-            .then(data => console.log(data))
-            .catch(error => console.error('Error:', error));
+            .then(data => {
+                console.log('order ID', data.orderId)
+                // console.log('amount in frontend from backend', data.amount)
+            })
+            .catch(error => console.error('Error while sending money: ', error));
 
 
     }
@@ -48,7 +55,7 @@ export function Payment() {
                         <input type="text" id="name" className='inp' onChange={(e) => {
                             setName(e.target.value)
 
-                        }} />
+                        }} required />
                     </div>
 
                     <div className='inpDiv' >
@@ -56,7 +63,7 @@ export function Payment() {
                         <input type='number' id="amount" className='inp' onChange={(e) => {
                             setAmount(e.target.value)
 
-                        }} />
+                        }} required/>
                     </div>
 
                     <div className='inpDiv'>

@@ -17,6 +17,7 @@ function App() {
       <Routes>
         <Route path="*" element={<Navigate to="/donate" replace />} />
         <Route path="donate" element={ <Payment/> } />
+        <Route path="create-order" element={ <Payment/> } />
       </Routes>
     </ALL_DATA.Provider>
   )
