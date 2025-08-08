@@ -9,6 +9,7 @@ export function Payment() {
     const { amount, setAmount, name, setName } = useContext(ALL_DATA);
     const [time, setTime] = useState(true);
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
+    const razorpay_script = import.meta.env.VITE_RAZORPAY_SCRIPT;
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -19,7 +20,21 @@ export function Payment() {
         return () => clearTimeout(timer)
     }, [])
 
+    const loadRazorpayScript = () => {
+        return new Promise((resolve) => {
+            const script = document.createElement("script");
+            script.src = `${razorpay_script}`;
+            script.onload = () => resolve(true);
+            script.onerror = () => resolve(false);
+            document.body.appendChild(script);
+        });
+    };
+
+
     const sendMoneyFn = () => {
+        if (name.length >= 15) {
+            alert('Enter Only middle name not full name and total charater must be less than 15 characters')
+        }
         if (!name || !amount || Number(amount) <= 0) {
             alert("Please enter a valid name and amount");
             return;
@@ -37,7 +52,41 @@ export function Payment() {
             .then(response => response.json())
             .then(data => {
                 console.log('order ID', data.orderId)
-                // console.log('amount in frontend from backend', data.amount)
+                if (data.orderId != undefined) {
+                    loadRazorpayScript()
+                        .then((loaded) => {
+                            if (!loaded) {
+                                alert("Razorpay SDK failed to load.");
+                                return;
+                            }
+                            const options = {
+                                key: import.meta.env.VITE_KEY_ID, // Razorpay public key from .env FROUNTED 
+                                amount: Number(amount) * 100, // in paise
+                                currency: "INR",
+                                name: "MyApp Donation",
+                                description: "Thank you for donating",
+                                order_id: data.orderId,
+                                handler: function (response) {
+                                    alert("Payment successful! Payment ID: " + response.razorpay_payment_id);
+                                    console.log("Payment successful! Payment ID: " + response.razorpay_payment_id);
+                                    
+                                    // Optional: Send response to backend for verification
+                                },
+                                prefill: {
+                                    name: name
+                                },
+                                theme: {
+                                    color: "#3399cc"
+                                }
+                            };
+                            const rzp = new window.Razorpay(options);
+                            rzp.open();
+                        })
+                        .catch((error) => {
+                            return false
+                        })
+                }
+
             })
             .catch(error => console.error('Error while sending money: ', error));
 
@@ -63,7 +112,7 @@ export function Payment() {
                         <input type='number' id="amount" className='inp' onChange={(e) => {
                             setAmount(e.target.value)
 
-                        }} required/>
+                        }} required />
                     </div>
 
                     <div className='inpDiv'>
