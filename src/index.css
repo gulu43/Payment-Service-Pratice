@@ -18,7 +18,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 800%;
+  font-size: 10vw;
   color: #9309ce;
   font-family: 'Courier New', Courier, monospace;
   animation: revealLeftToRigth 2.5s ease-out forwards;
@@ -34,6 +34,7 @@ body {
   border-radius: 30px;
   box-sizing: border-box;
   padding: 1%;
+  margin-top: 10px;
   
   
 }

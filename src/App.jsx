@@ -15,7 +15,7 @@ function App() {
   return (
     <ALL_DATA.Provider value={{ amount, setAmount ,name, setName}}>
       <Routes>
-        <Route path="*" element={<Navigate to="/donate" replace />} />
+        <Route path="*" element={<Navigate to="/create-order" replace />} />
         <Route path="donate" element={ <Payment/> } />
         <Route path="create-order" element={ <Payment/> } />
       </Routes>
